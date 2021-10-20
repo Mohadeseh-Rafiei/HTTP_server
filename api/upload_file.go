@@ -10,7 +10,7 @@ import (
 
 type ReceivedFile struct {
 	Url string `json:"file"`
-	Id string
+	Id  string
 }
 
 func UploadFile(response http.ResponseWriter, request *http.Request) {
@@ -23,14 +23,28 @@ func UploadFile(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	fmt.Println("uploading File...")
-	content := Download(p.Url)
+	content, err := Download(p.Url)
+	if err != nil {
+		resp := make(map[string]string)
+		resp["error"] = err.Error()
+		jsonResp, _ := json.Marshal(resp)
+		response.Write(jsonResp)
+		return
+	}
 	fileName := pkg.GetFilename(p.Url)
 	file, accessKey := pkg.Hashing(content)
-	pkg.StoreByChunkToLocal(fileName, accessKey, 1024, file)
+	err = pkg.StoreByChunkToLocal(fileName, accessKey, 1024, file)
 	fmt.Println(fileName, accessKey)
 	fmt.Println("upload successfully!")
 	response.WriteHeader(http.StatusCreated)
 	response.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		resp := make(map[string]string)
+		resp["error"] = err.Error()
+		jsonResp, _ := json.Marshal(resp)
+		response.Write(jsonResp)
+		return
+	}
 	resp := make(map[string]string)
 	resp["file_id"] = accessKey + ":" + fileName
 	jsonResp, _ := json.Marshal(resp)

@@ -1,25 +1,22 @@
 package api
 
 import (
+	"HTTP_server/pkg"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
 type Wanted struct {
-	Url string `json:"file_id"`
+	Id string `json:"file_id"`
 }
 
-
-func DownloadFile(response http.ResponseWriter, request *http.Request){
+func DownloadFile(response http.ResponseWriter, request *http.Request) {
 	request.ParseMultipartForm(10 * 1024 * 1024)
+	fmt.Println("hi")
 	var p Wanted
-	err := json.NewDecoder(request.Body).Decode(&p)
-	fmt.Println(p.Url)
-	if err != nil {
-		http.Error(response, err.Error(), http.StatusBadRequest)
-		return
-	}
+	json.NewDecoder(request.Body).Decode(&p)
 	fmt.Println("downloading...")
-
+	file_bytes := pkg.GetFileFromLocal(p.Id)
+	response.Write(file_bytes)
 }
