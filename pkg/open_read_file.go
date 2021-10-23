@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"HTTP_server/internal"
 	"fmt"
 	"os"
 	"sync"
@@ -64,14 +65,17 @@ func ReadFileByChunk(file *os.File, fileSize int64, defaultChunkSize int, goRout
 	return fileReader
 }
 
-func OpenReadFile(directory string, fileName string) []byte {
+func OpenReadFile(directory string, fileName string) ([]byte, error) {
 	filePath := "./data/" + directory + "/" + fileName
-	file, _ := os.Open(filePath)
-	file_stat, _ := file.Stat()
+	file, err := os.Open(filePath)
+	file_stat, err := file.Stat()
+	if err != nil {
+		return nil, internal.UnsuccessfulUpload
+	}
 	n := file_stat.Size()
 	fmt.Println(n)
 	defer file.Close()
 	defaultChunkSize := 1024
 	fileReader := ReadFileByChunk(file, n, defaultChunkSize, 2)
-	return fileReader
+	return fileReader, nil
 }

@@ -17,6 +17,6 @@ func BenchmarkRead(b *testing.B) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		pkg.DoSaving(2, 1024*i, file, outFile)
+		pkg.SaveByChunk(2, 1024*i, file, outFile)
 	}
 }

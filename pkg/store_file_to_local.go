@@ -29,7 +29,7 @@ func (p *WorkerImpl) Get() func(buffer []byte, outFile *os.File, startPos int) i
 	return <-p.chans
 }
 
-func DoSaving(goRoutinsCount int, defaultChunkSize int, content []byte, outFile *os.File) {
+func SaveByChunk(goRoutinsCount int, defaultChunkSize int, content []byte, outFile *os.File) {
 	worker := NewWorker(goRoutinsCount)
 	for i := 0; i < goRoutinsCount; i++ {
 		worker.Put(func(buffer []byte, outFile *os.File, startPos int) interface{} {
@@ -64,7 +64,6 @@ func DoSaving(goRoutinsCount int, defaultChunkSize int, content []byte, outFile 
 }
 
 func StoreByChunkToLocal(filename string, accessKey string, defaultChunkSize int, content []byte) error {
-	//fmt.Println(content)
 	if os.Mkdir("./data/"+accessKey, 0777) != nil {
 		return internal.UnsuccessfulDownload
 	}
@@ -74,9 +73,7 @@ func StoreByChunkToLocal(filename string, accessKey string, defaultChunkSize int
 	if err != nil {
 		return internal.UnsuccessfulDownload
 	}
-	//goRoutines := len(content) / defaultChunkSize
-	//fmt.Println(len(content))
-	DoSaving(2, defaultChunkSize, content, outFile)
+	SaveByChunk(2, defaultChunkSize, content, outFile)
 	fmt.Println("file downloaded successfully!")
 	return nil
 
