@@ -7,6 +7,6 @@ import (
 
 func TestGetFilename(t *testing.T) {
 	fileUrl := "http://www.africau.edu/images/default/sample.pdf"
-	filename := GetFileName(fileUrl)
+	filename := GetFileNameFromUrl(fileUrl)
 	strings.EqualFold(filename, "sample.pdf")
 }

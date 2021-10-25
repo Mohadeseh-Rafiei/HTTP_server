@@ -4,6 +4,6 @@ import (
 	"path"
 )
 
-func GetFileName(url string) string {
+func GetFileNameFromUrl(url string) string {
 	return path.Base(url)
 }

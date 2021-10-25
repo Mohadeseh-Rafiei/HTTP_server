@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 )
 
 type Worker interface {
@@ -32,6 +33,7 @@ func (p *WorkerImpl) Get() func(buffer []byte, outFile *os.File, startPos int) i
 func SaveByChunk(goRoutinsCount int, defaultChunkSize int, content []byte, outFile *os.File) {
 	worker := NewWorker(goRoutinsCount)
 	for i := 0; i < goRoutinsCount; i++ {
+		fmt.Println(i)
 		worker.Put(func(buffer []byte, outFile *os.File, startPos int) interface{} {
 			outFile.WriteAt(buffer, int64(startPos))
 			return struct{}{}
@@ -55,7 +57,9 @@ func SaveByChunk(goRoutinsCount int, defaultChunkSize int, content []byte, outFi
 			}
 			x = content[startPos:endPos]
 			object := worker.Get()
-			object(x, outFile, startPos)
+			time.Sleep(2 * time.Second)
+			a := object(x, outFile, startPos)
+			fmt.Println("go routin: ", i, "with worker: ", a.(int))
 			worker.Put(object)
 		}(i, &wg)
 		i += 1
@@ -63,10 +67,14 @@ func SaveByChunk(goRoutinsCount int, defaultChunkSize int, content []byte, outFi
 	wg.Wait()
 }
 
-func StoreByChunkToLocal(filename string, accessKey string, defaultChunkSize int, content []byte) error {
-	if os.Mkdir("./data/"+accessKey, 0777) != nil {
-		return internal.UnsuccessfulDownload
+func SaveToLocal(filename string, accessKey string, defaultChunkSize int, content []byte) error {
+	if _, err := os.Stat("./data/" + accessKey); os.IsNotExist(err) {
+		err := os.Mkdir("./data/"+accessKey, 0777)
+		if err != nil {
+			return internal.UnsuccessfulUpload
+		}
 	}
+
 	filePath := "./data" + "/" + accessKey + "/" + filename
 
 	outFile, err := os.Create(filePath)

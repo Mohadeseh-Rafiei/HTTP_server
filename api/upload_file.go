@@ -31,9 +31,9 @@ func UploadFile(response http.ResponseWriter, request *http.Request) {
 		response.Write(jsonResp)
 		return
 	}
-	fileName := pkg.GetFileName(p.Url)
+	fileName := pkg.GetFileNameFromUrl(p.Url)
 	file, accessKey := pkg.Hashing(content)
-	err = pkg.StoreByChunkToLocal(fileName, accessKey, 1024, file)
+	err = pkg.SaveToLocal(fileName, accessKey, 1024, file)
 	fmt.Println(fileName, accessKey)
 	fmt.Println("upload successfully!")
 	response.WriteHeader(http.StatusCreated)

@@ -65,8 +65,8 @@ func ReadFileByChunk(file *os.File, fileSize int64, defaultChunkSize int, goRout
 	return fileReader
 }
 
-func OpenReadFile(directory string, fileName string) ([]byte, error) {
-	filePath := "../data/" + directory + "/" + fileName
+func ReadFromLocal(directory string, fileName string) ([]byte, error) {
+	filePath := "./data/" + directory + "/" + fileName
 	file, err := os.Open(filePath)
 	file_stat, err := file.Stat()
 	if err != nil {
