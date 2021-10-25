@@ -66,7 +66,7 @@ func ReadFileByChunk(file *os.File, fileSize int64, defaultChunkSize int, goRout
 }
 
 func OpenReadFile(directory string, fileName string) ([]byte, error) {
-	filePath := "./data/" + directory + "/" + fileName
+	filePath := "../data/" + directory + "/" + fileName
 	file, err := os.Open(filePath)
 	file_stat, err := file.Stat()
 	if err != nil {
