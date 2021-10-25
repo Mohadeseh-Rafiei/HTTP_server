@@ -14,7 +14,6 @@ type DownloadedFile struct {
 
 func DownloadFile(response http.ResponseWriter, request *http.Request) {
 	request.ParseMultipartForm(10 * 1024 * 1024)
-	fmt.Println("hi")
 	var p DownloadedFile
 	json.NewDecoder(request.Body).Decode(&p)
 	fmt.Println("downloading...")
